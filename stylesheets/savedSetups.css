@@ -1,0 +1,113 @@
+#savedSetups, #savedSetups[open] {
+    background-color: hsl(from whitesmoke h s l / 0.1);
+    color: whitesmoke;
+    font-family: monospace;
+    font-size: 17px;
+    border: 2px solid hsl(from whitesmoke h s l / 0.5);
+    /* border: none; */
+    overflow-x: hidden;
+    overflow-y: scroll;
+    max-height: 85%;
+    scrollbar-width: none;
+}
+
+#savedSetups {
+    animation: vanish 1s;
+    display: none;
+}
+
+#savedSetups[open] {
+    animation: appear 750ms;
+    display: block;
+}
+
+#savedSetups::backdrop {
+    /* background-image: linear-gradient(45deg, green, blue); */
+    /* background-image: linear-gradient(45deg, green, yellow); */
+    background-color: hsl(0, 0%, 0%);
+    opacity: 0;
+}
+
+#savedSetups[open]::backdrop {
+    opacity: 0.25;
+}
+
+@keyframes appear {
+    from {
+        display: none;
+        opacity: 0;
+        transform: translateY(-100vh);
+    }
+    to {
+        display: block;
+        opacity: 1;
+    }
+}
+
+@keyframes vanish {
+    from {
+        display: block;
+        opacity: 1;
+    }
+    to {
+        display: none;
+        opacity: 0;
+        transform: translateY(50vh);
+    }
+}
+
+#savedSetups > .closeBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: transparent;
+    color: white;
+    border: none;
+    font-family: cursive;
+    font-size: 20px;
+    margin: 3px 15px;
+    cursor: pointer;
+}
+
+.setupListItem {
+    border: 2px dashed hsl(from whitesmoke h s l / 0.5);
+    position: relative;
+    padding: 20px;
+    margin: 20px 0;
+    width: 500px;
+}
+
+.setupLabel {
+    position: absolute;
+    padding: 0 5px;
+    top: 0;
+    left: 10px;
+    transform: translateY(-50%);
+    /* background-color: hsl(0, 0%, 10%); */
+    /* background-color: transparent; */
+    opacity: 0;
+}
+
+.setupInfo {
+    background-color: hsla(0, 0%, 100%, 0.2);
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setupName {
+    cursor: pointer;
+}
+
+.removeSetupBtn {
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    text-shadow: 1px 1px 2px hsla(0, 0%, 10%, 0.7);
+}
+
+.playerSetup, .trailSetup {
+    margin: 10px 0;
+    text-transform: capitalize;
+}

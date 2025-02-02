@@ -1,0 +1,293 @@
+:root {
+    --button-orange: hsl(20, 100%, 45%);
+    --button-skyblue: hsl(196, 88%, 45%);
+    --button-green: hsl(120, 100%, 25%);
+    --theme-black: hsl(0, 0%, 10%);
+    --selected-border-white: hsl(0, 0%, 85%);
+}
+
+* {
+    user-select: none;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+#canvas {
+    background-color: hsl(0, 0%, 10%);
+    /* background-image: url("./geometry/\ \(10\).jpg"); */
+    /* background-image: url("./geometry/\ \(13\).jpg"); */
+    /* background-image: url("./geometry/\ \(14\).jpg"); */
+    background-attachment: fixed;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-clip: border-box;
+    background-origin: border-box;
+    background-blend-mode: luminosity;
+    /* background-color: brown; */
+}
+
+#effectsCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    filter: blur(5px);
+}
+
+#gameStatsCanvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#options {
+    position: absolute;
+    bottom: 0;
+    right: 10px;
+    opacity: 0.5;
+    padding: 20px 0px;
+    display: flex;
+    flex-direction: column;
+    transform: translateY(70%);
+    transition: opacity, transform 500ms;
+}
+
+#options:has(button:hover), #options:has(button:focus), #options:hover {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+#options button:nth-child(1) {
+    text-align: center;
+    font-size: 35px;
+    margin-bottom: 5px;
+    background-color: transparent;
+    border: none;
+}
+
+.option {
+    font-size: 30px;
+    margin: 10px;
+    background-color: hsl(from var(--theme-black) h s l / 0.5);
+    border: 2px solid hsl(from white h s l / 0.5);
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.option:hover {
+    background-color: hsl(from var(--theme-black) h s calc(l + 5));
+}
+
+.option:active {
+    background-color: var(--theme-black);
+}
+
+/* Customisation Panel Designing */
+.customTab, .customTab[open] {
+    width: 650px;
+    border-radius: 5px;
+    padding: 20px;
+    color: white;
+    background-color: rgba(128, 128, 128, 0.1);
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 20px;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid gray;
+}
+
+.customTab {
+    display: none;
+    opacity: 0;
+    animation: vanish 500ms;
+}
+
+.customTab[open] {
+    display: block;
+    opacity: 1;
+    animation: appear 750ms;
+}
+
+.customTab .closeBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 30px;
+    background-color: transparent;
+    border: none;
+    font-size: 15px;
+    font-family: monospace;
+    cursor: pointer;
+}
+
+#panel {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    margin: 10px;
+}
+
+.prop {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    animation: fade-in ease-in-out 0.5s;
+}
+
+@keyframes fade-in {
+    from {
+        translate: 0 200%;
+        opacity: 0;
+    }
+    to {
+        translate: 0 0;
+        opacity: 1;
+    }
+}
+
+.prop input {
+    margin: 5px 0 ;
+}
+
+.label {
+    font-family: monospace;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#preview {
+    position: relative;
+    margin-top: 10px;
+}
+
+#previewCanvas {
+    border: 5px ridge hsl(0, 0%, 70%);
+    border-radius: 5px;
+    transform: translateX(-5px);
+    background-color: hsl(0, 0%, 10%, 0.5);
+}
+
+#previewEffects {
+    position: absolute;
+    top: 0;
+    left: 0;
+    filter: blur(5px);
+}
+
+.headings {
+    font-family: monospace;
+    text-align: center;
+    margin: 10px;
+    margin-bottom: 20px;
+    font-size: 25px;
+    color: whitesmoke;
+}
+
+.refresh {
+    cursor: pointer;
+    font-size: 1.1em;
+    user-select: none;
+    background-color: transparent;
+    border: none;
+    color: whitesmoke;
+}
+
+.customChoice {
+    height: 50px;
+    width: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--theme-black);
+    border: 2px solid gray;
+    border-radius: 2px;
+    font-size: 25px;
+    margin: 0 5px;
+    cursor: pointer;
+}
+
+.customChoice:hover {
+    background-color: hsl(from var(--theme-black) h s calc(l + 5));
+}
+
+.customChoice:active {
+    background-color: var(--theme-black);
+}
+
+.customChoice input {
+    opacity: 0;
+    position: absolute;
+}
+
+.customChoice:has(input:checked) {
+    border: 2px solid var(--selected-border-white);
+}
+
+#typeCustomisation {
+    display: flex;
+    flex-direction: column;
+}
+
+.typeCustomisationSection {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin: 10px;
+}
+
+.options {
+    display: flex;
+    flex-direction: row;
+}
+
+/* Customisation Tab Actions */
+#customisationControls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+#customisationControls button {
+    /* --button-color: var(--theme-black); */
+    --_button-color: var(--button-color, black);
+
+    width: 100%;
+    border: none;
+    padding: 15px;
+    margin: 10px auto;
+    font-family: monospace;
+    border-radius: 5px;
+    font-size: 20px;
+    cursor: pointer;
+
+    background-color: transparent;
+    border: 2px solid hsl(0, 0%, 75%);
+    color: hsl(0, 0%, 95%);
+}
+
+#customisationControls button:hover {
+    border: none;
+    background-color: hsl(from var(--_button-color) h s calc(l + 5));
+}
+
+#customisationControls button:active {
+    background-color: var(--_button-color);
+}
+
+#startGame {
+    --button-color: var(--button-green);
+}
+
+#saveSetup {
+    --button-color: var(--button-skyblue);
+}
+
+#playDefault {
+    --button-color: var(--button-orange);
+}

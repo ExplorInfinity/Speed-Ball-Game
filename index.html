@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Speed Ball</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="stylesheets/savedSetups.css">
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+    <canvas id="effectsCanvas"></canvas>
+    <canvas id="gameStatsCanvas"></canvas>
+
+    <div id="options">
+        <button>⚙️</button>
+        <button class="option" id="showSavedSetups">👾</button>
+        <button class="option" id="openCustomisationPanel">🥏</button>
+    </div>
+
+    <dialog id="customisationPanel" class="customTab">
+        <!-- Close Button -->
+        <button id="customTabClosebtn" class="closeBtn">❌</button>
+
+        <!-- Heading -->
+        <h1 class="headings">Customisation Panel</h1>
+
+        <!-- Customisation Panel's Sliders -->
+        <div id="panel"></div>
+
+        <!-- Player and Effects Selection -->
+        <div id="typeCustomisation">
+            <div id="players" class="typeCustomisationSection">
+                <h1 class="headings">Players</h1>
+                <div class="options">
+                    <label class="customChoice">
+                        🟣<input type="radio" name="player" id="ball" value="ball" onclick="this.parentNode.classList.toggle('selected')">
+                    </label>
+                    <!-- <label class="customChoice">
+                        ⭐<input type="radio" name="player" id="star">
+                    </label>
+                    <label class="customChoice">
+                        🌟<input type="radio" name="player" id="star">
+                    </label> -->
+                    <label class="customChoice">
+                        🌠<input type="radio" name="player" id="star" value="star">
+                    </label>
+                </div>
+            </div>
+            <div id="trails" class="typeCustomisationSection">
+                <h1 class="headings">Trails</h1>
+                <div class="options">
+                    <label class="customChoice">
+                        🫧<input type="radio" name="trail" id="bubble" value="bubble">
+                    </label>
+                    <label class="customChoice">
+                        🔥<input type="radio" name="trail" id="fire" value="fire">
+                    </label>
+                    <label class="customChoice">
+                        💫<input type="radio" name="trail" id="golden" value="golden">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <!-- Player and Effect Preview -->
+        <div id="preview">
+            <canvas id="previewCanvas"></canvas>
+            <canvas id="previewEffects"></canvas>
+        </div>
+
+        <!-- Actions -->
+        <div id="customisationControls">
+            <button id="startGame">Save and Play</button>
+            <button id="saveSetup">Save</button>
+            <button id="playDefault">Play Default</button>
+            <!-- <button>Exit</button> -->
+        </div>
+    </dialog>
+
+    <dialog id="savedSetups">
+        <button onclick="savedSetups.close()" class="closeBtn">X</button>
+        <!-- Layout of each list item -->
+        <!-- <div class="setupListItem">
+            <div class="setupLabel">Setup 0</div>
+            <div class="setupInfo">
+                <div class="setupName">Setup Name</div>
+                <div class="setupControls">
+                    <button class="removeSetupBtn">❌</button>
+                </div>
+            </div>
+            <div class="setup">
+                <div class="playerSetup">Empty Slot</div>
+                <div class="trailSetup"></div>
+            </div>
+        </div> -->
+    </dialog>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
