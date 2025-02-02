@@ -14,7 +14,7 @@ export class Player {
         this.x = startPos ? startPos.x : this.track.trackRects[2].x + this.track.width*0.5;
         this.y = startPos ? startPos.y : this.track.trackRects[2].y + this.track.width*0.5;
         this.size = size;
-        this.collisionOffset = size*0.5;
+        this.collisionOffset = 0; //size*0.5;
 
         this.start = false;
         this.baseSpeed = baseSpeed;
@@ -75,12 +75,24 @@ export class Player {
             rect.drawPath(this.context, this.collisionOffset);
         }
 
-        if(!this.context.isPointInPath(this.x, this.y)) {
+        let isPointOutside = false;
+        let outsidePoint = null;
+        for(const point of this.body) {
+            const x = this.x + point.x;
+            const y = this.y + point.y;
+            if(!this.context.isPointInPath(x, y)){
+                isPointOutside = true;
+                outsidePoint = point;
+                break
+            }
+        }
+
+        if(isPointOutside) {
             this.game.setGameOver();
             do {
                 if(this.speedX > 0) this.x -= 1;
                 if(this.speedY > 0) this.y -= 1;
-            } while (!this.context.isPointInPath(this.x, this.y));
+            } while (!this.context.isPointInPath(this.x + outsidePoint.x, this.y + outsidePoint.y));
             this.speedX = this.speedY = 0;
         }
     }
@@ -147,8 +159,18 @@ export class Ball extends Player {
         { baseSpeed=5, hue=185, size=35, startPos, effectProps }={}
     ) {        
         super(game, { baseSpeed, hue, size, startPos, effectProps });
-
+        this.#createBody();
         if(!effectProps) this.effect = new TrailEffect(this);
+    }
+
+    #createBody() {
+        this.body = [];
+        for(let i = 0; i < 2*Math.PI; i += Math.PI*0.1) {
+            this.body.push({
+                x: Math.cos(i) * this.size * 0.5, 
+                y: Math.sin(i) * this.size * 0.5, 
+            });
+        }
     }
 
     #createGradient() {

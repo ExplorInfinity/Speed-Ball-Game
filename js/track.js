@@ -3,11 +3,10 @@ import { ColorRect, Rectangle } from "./rectangle.js";
 import { Gradient } from "./utils.js";
 
 export class Track {
-    constructor(game, context, width=150, { playerSize=60 }={}) {
+    constructor(game, context, width=150) {
         this.game = game;
         this.context = context;
         this.width = width;
-        this.playerSize = playerSize;
 
         this.trackRects = [];
         this.maxTrackRectsGen = 
@@ -22,7 +21,7 @@ export class Track {
         this.distanceMilestone = [200, 500, 1000, 1500, 2000];
         this.gradientTypesIndex = [0, 0, 0, 1, 1, 0];
         this.gradientTypes = [Gradient.darkToDarkest, Gradient.dark_35ToDarkest];
-        this.milestoneIndex = 1;
+        this.milestoneIndex = 0;
         this.checkMilestones = false;
         this.drawGuides = false;
 
@@ -53,12 +52,12 @@ export class Track {
             this.trackRects.push(
                 new Rectangle(this.trackX, this.trackY, length, this.width, 
                 trackHue, borderHue, gradientType));
-            this.trackX += length - this.playerSize;
+            this.trackX += length;
         } else {
             this.trackRects.push(
                 new Rectangle(this.trackX, this.trackY, this.width, length, 
                 trackHue, borderHue, gradientType));
-            this.trackY += length - this.playerSize;
+            this.trackY += length;
         }
         this.currentRectIndex++;
         

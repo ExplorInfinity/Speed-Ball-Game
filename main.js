@@ -15,7 +15,10 @@ const previewEffects = document.getElementById('previewEffects');
 previewCanvas.width = previewEffects.width = 650;
 
 class Game {
-    constructor(handler, context, effectsContext, gameStatsContext, { trackWidth=150, playerSize=60, setupIndex }={}) {
+    constructor(
+        handler, context, effectsContext, gameStatsContext, 
+        { trackWidth=150, setupIndex, defaultPlayer=Ball }={}) {
+
         this.setupIndex = setupIndex;        
         const setup = setupIndex >= 0 ? Setup.retrieveSetup(setupIndex) : null;
 
@@ -27,12 +30,11 @@ class Game {
         this.gameStatsCanvas = gameStatsContext.canvas;
         this.gameStatsContext = gameStatsContext;
 
+        this.track = new Track(this, context, trackWidth);
         if(setup) {
-            this.track = new Track(this, context, trackWidth, { playerSize: setup.playerProps.size });
             this.#setPlayer(setup.playerProps, setup.effectProps);
         } else {
-            this.track = new Track(this, context, trackWidth, { playerSize });
-            this.player = new Star(this, { size: playerSize });
+            this.player = new defaultPlayer(this);
         }
 
         this.trackStart = {
@@ -52,21 +54,13 @@ class Game {
         
         this.starsSize = 25;
         this.starsHue = 60;
-        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.6 };
-        
-        // this.setGameOver();
+        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.625 };        
     }
 
     #setPlayer(playerProps, effectProps) {
         const props = { ...playerProps, effectProps };
-        switch(playerProps.playerType) {
-            case 'ball':
-                this.player = new Ball(this, props);
-                break
-            case 'star':
-                this.player = new Star(this, props);
-                break
-        }
+        const players = { "ball": Ball, "star": Star };
+        this.player = new players[playerProps.playerType](this, props);
     }
 
     setGameOver() {
@@ -83,7 +77,7 @@ class Game {
         window.addEventListener('keydown', e => {
             const keyPressed = e.key;            
             if(keyPressed === 'Enter') {
-                this.handler.createNewGame(this.setupIndex);
+                this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
                 controller.abort();
             }
         }, { signal });
@@ -172,7 +166,7 @@ class Game {
     #drawDebug() {
         this.context.beginPath();
         for(const rect of this.track.trackRects) {
-            rect.drawPath(this.context, this.player.size*0.5);
+            rect.drawPath(this.context, this.player.collisionOffset);
         }
         this.context.stroke();
     }
@@ -242,9 +236,33 @@ class Handler {
             if(keyPressed === 'd') this.downloadScreenShots();
             isKeyPressed = true;
         });
-        window.addEventListener('keyup', e => {
+        window.addEventListener('keyup', () => {
             isKeyPressed = false;
         });
+    }
+
+    #getScreenShot() {
+        const photoCanvas = document.createElement('canvas');
+        const ctx = photoCanvas.getContext('2d');
+        photoCanvas.width = window.innerWidth;
+        photoCanvas.height = window.innerHeight;
+
+        ctx.fillStyle = 'hsl(0,0%,10%)';
+        ctx.fillRect(0, 0, photoCanvas.width, photoCanvas.height);
+        ctx.drawImage(this.canvas, 0, 0);
+        ctx.save();
+        ctx.filter = 'blur(5px)';
+        ctx.drawImage(this.effectsCanvas, 0, 0);
+        ctx.restore();
+        ctx.drawImage(this.gameStatsCanvas, 0, 0);
+
+        photoCanvas.toBlob((blob) => {
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `Screenshot-SpeedBall-Milestone-${this.game.track.milestoneIndex}`;
+            this.downloads.push(a);
+        }, 'image.png', 1);     
     }
 
     downloadScreenShots() {
@@ -263,12 +281,13 @@ class Handler {
         }
     }
 
-    createNewGame(setupIndex) {  
-        this.game = new Game(this, this.context, this.effectsContext, this.gameStatsContext, { setupIndex });
+    createNewGame(setupIndex, defaultPlayer) {  
+        this.game = new Game(this, this.context, this.effectsContext, 
+            this.gameStatsContext, { setupIndex, defaultPlayer });
     }
 
-    initialize(setupIndex) {
-        this.createNewGame(setupIndex);
+    initialize(setupIndex, defaultPlayer) {
+        this.createNewGame(setupIndex, defaultPlayer);
         this.animate(0);
     }
 
@@ -287,11 +306,11 @@ class Handler {
         );
 
         this.stopPreview = () => {
-            document.getElementById('panel').textContent = '';
-            this.previewing = false;
-            this.previewPlayer = null;
+            this.previewPlayer.abort();
             controller.abort();
             document.getElementById('customisationPanel').close();
+            this.previewing = false;
+            this.previewPlayer = null;
         };
 
         // Customisation Panel Actions
@@ -304,7 +323,7 @@ class Handler {
             if(setupName.trim().length > 0) {
                 const setupIndex = this.#saveCustomSetup(setupName.trim());
                 this.stopPreview();
-                this.initialize(setupIndex);
+                this.createNewGame(setupIndex);
             }
         }, { signal });
         const saveSetupBtn = document.getElementById('saveSetup');
@@ -316,7 +335,7 @@ class Handler {
         }, { signal });
         const playDefaultBtn = document.getElementById('playDefault');
         playDefaultBtn.addEventListener('click', () => {
-            this.initialize();
+            this.createNewGame(-1, this.previewPlayer instanceof PreviewBall ? Ball : Star);
             this.stopPreview();
         }, { signal });
     }
@@ -343,14 +362,8 @@ class Handler {
     }
 
     #setPlayer(playerType) {
-        switch(playerType) {
-            case 'ball':
-                this.previewPlayer = new PreviewBall(this.previewContext, this.previewEffectsContext);
-                break
-            case 'star':
-                this.previewPlayer = new PreviewStar(this.previewContext, this.previewEffectsContext);
-                break
-        }
+        const players = { "ball": PreviewBall, "star": PreviewStar };
+        this.previewPlayer = new players[playerType](this.previewContext, this.previewEffectsContext);
     }
 
     preview(timestamp) {
@@ -365,30 +378,6 @@ class Handler {
 
             requestAnimationFrame((time) => this.preview(time));
         }
-    }
-
-    #getScreenShot() {
-        const photoCanvas = document.createElement('canvas');
-        const ctx = photoCanvas.getContext('2d');
-        photoCanvas.width = window.innerWidth;
-        photoCanvas.height = window.innerHeight;
-
-        ctx.fillStyle = 'hsl(0,0%,10%)';
-        ctx.fillRect(0, 0, photoCanvas.width, photoCanvas.height);
-        ctx.drawImage(this.canvas, 0, 0);
-        ctx.save();
-        ctx.filter = 'blur(5px)';
-        ctx.drawImage(this.effectsCanvas, 0, 0);
-        ctx.restore();
-        ctx.drawImage(this.gameStatsCanvas, 0, 0);
-
-        photoCanvas.toBlob((blob) => {
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `Screenshot-SpeedBall-Milestone-${this.game.track.milestoneIndex}`;
-            this.downloads.push(a);
-        }, 'image.png', 1);     
     }
 
     animate(timestamp) {
