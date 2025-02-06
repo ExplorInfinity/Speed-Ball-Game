@@ -13,6 +13,10 @@ export function getRandomInteger(lowerLimit, upperLimit) {
     return Math.floor(Math.random()*(upperLimit - lowerLimit) + lowerLimit)
 }
 
+export function clamp(value, min, max) {
+    return Math.max(min, Math.min(value, max))
+}
+
 export function createConsecutiveLines(points) {
     const lines = [];
     for(let i = 1; i < points.length; i++) {

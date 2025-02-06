@@ -65,12 +65,14 @@ class Game {
 
     setGameOver() {
         this.gameOver = true;
-        const distanceTravelled = this.player.getDistanceCovered();
+        const distanceCovered = this.player.getDistanceCovered();
         const starsEarned = this.track.distanceMilestone.reduce(
-            (acc, current, i) => distanceTravelled >= current ? i+1 : acc, 0);
+            (acc, current, i) => distanceCovered >= current ? i+1 : acc, 0);
         this.progressStars = new StarAnimation(
             this.gameStatsContext, this.starsPos, this.starsSize, 
             starsEarned, this.track.distanceMilestone.length, { starHue: this.starsHue });
+
+        this.handler.setGameStats(distanceCovered, starsEarned, this.track.powerHandler.powersTaken);
 
         const controller = new AbortController();
         const signal = controller.signal;
@@ -239,6 +241,43 @@ class Handler {
         window.addEventListener('keyup', () => {
             isKeyPressed = false;
         });
+        
+        const showStatsBtn = document.getElementById('showStats');
+        showStatsBtn.addEventListener('click', () => {
+            showStatsBtn.addEventListener('focusin', e => e.target.blur(), { once: true })
+        });
+        this.getGameStats();
+    }
+
+    setGameStats(newDistanceCovered=0, newStarsEarned=0, newStarsCollected=0) {
+        this.distanceCovered += newDistanceCovered;
+        this.starsEarned += newStarsEarned;
+        this.starsCollected += newStarsCollected;
+        const { distanceCovered, starsEarned, starsCollected } = this;
+        const stats = { distanceCovered, starsEarned, starsCollected };
+        localStorage.setItem('stats', JSON.stringify(stats));
+        this.updateGameStats();
+    }
+
+    getGameStats() {
+        const stats = localStorage.getItem('stats');
+        
+        if(stats) {
+            const { distanceCovered, starsEarned, starsCollected } = JSON.parse(stats);
+            this.distanceCovered = distanceCovered;
+            this.starsEarned = starsEarned;
+            this.starsCollected = starsCollected;
+            this.updateGameStats();
+        } else {
+            this.distanceCovered = this.starsEarned = this.starsCollected = 0;
+            this.setGameStats();
+        }
+    }
+
+    updateGameStats() {
+        document.getElementById('distanceCovered').textContent = `Distance Covered: ${this.distanceCovered}`;
+        document.getElementById('starsEarned').textContent = `Stars Earned: ${this.starsEarned}`;
+        document.getElementById('starsCollected').textContent = `Stars Collected: ${this.starsCollected}`;
     }
 
     #getScreenShot() {

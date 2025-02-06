@@ -99,30 +99,36 @@ body {
     display: flex;
     flex-direction: column;
     border: 2px solid gray;
+    overflow: scroll;
+    scrollbar-width: none;
+    max-height: 90%;
 }
 
-.customTab {
+dialog {
     display: none;
     opacity: 0;
     animation: vanish 500ms;
 }
 
-.customTab[open] {
+dialog[open] {
     display: block;
     opacity: 1;
     animation: appear 750ms;
 }
 
-.customTab .closeBtn {
+.closeBtn {
     position: absolute;
     top: 0;
     right: 0;
-    margin: 30px;
     background-color: transparent;
     border: none;
+    cursor: pointer;
     font-size: 15px;
     font-family: monospace;
-    cursor: pointer;
+}
+
+.customTab .closeBtn {
+    margin: 30px;
 }
 
 #panel {
@@ -290,4 +296,54 @@ body {
 
 #playDefault {
     --button-color: var(--button-orange);
+}
+
+/* Show Stats */
+#showStats {
+    position: absolute;
+    top: 0;
+    right: 0;
+    margin: 20px;
+    font-size: 1.5em;
+    border: none;
+    background-color: transparent;
+    opacity: 0.75;
+    cursor: pointer;
+    transition: opacity 0.5s;
+}
+
+#showStats:hover {
+    opacity: 1;
+}
+
+#stats {
+    font-family: monospace;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 2px solid hsl(from white h s l / 0.5);
+    width: 400px;
+}
+
+#stats ul {
+    list-style-type: none;    
+    margin: 10px;
+    padding: 0;
+}
+
+#stats li {
+    margin: 10px;
+}
+
+#stats .closeBtn {
+    margin: 10px;
+}
+
+#stats::backdrop {
+    background-color: hsl(0, 0%, 10%);
+    opacity: 0;
+}
+
+#stats[open]::backdrop {
+    opacity: 0.5;
 }

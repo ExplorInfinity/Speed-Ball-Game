@@ -18,6 +18,8 @@
         <button class="option" id="openCustomisationPanel">🥏</button>
     </div>
 
+    <button id="showStats" onclick="stats.showModal()">📊</button>
+
     <dialog id="customisationPanel" class="customTab">
         <!-- Close Button -->
         <button id="customTabClosebtn" class="closeBtn">❌</button>
@@ -79,6 +81,7 @@
     </dialog>
 
     <dialog id="savedSetups">
+        <h1 class="headings">Saved Setups</h1>
         <button onclick="savedSetups.close()" class="closeBtn">X</button>
         <!-- Layout of each list item -->
         <!-- <div class="setupListItem">
@@ -94,6 +97,22 @@
                 <div class="trailSetup"></div>
             </div>
         </div> -->
+    </dialog>
+
+    <dialog id="stats">
+        <h1 class="headings">Stats</h1>
+        <button class="closeBtn" onclick="stats.close()">❌</button>
+        <ul>
+            <li id="distanceCovered">
+                Distance Covered: 0
+            </li>
+            <li id="starsEarned">
+                Stars Earned: 0
+            </li>
+            <li id="starsCollected">
+                Stars Collected: 0
+            </li>
+        </ul>
     </dialog>
 
     <script type="module" src="main.js"></script>

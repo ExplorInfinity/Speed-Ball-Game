@@ -18,10 +18,16 @@ export class Player {
 
         this.start = false;
         this.baseSpeed = baseSpeed;
+        this.maxSpeed = 10;
+        this.maxedOutSpeed = 15;
         this.speedX = 0;
         this.speedY = 0;
         this.currentAngle = 0;
+
         this.startDistance = this.x + this.y;
+        this.distanceMark = 500;
+        this.distanceMarked = 0;
+        this.speedIncrease = 2;
 
         this.playerColor = hue;
 
@@ -42,17 +48,12 @@ export class Player {
     }
 
     setEffect(effectProps) {
-        switch(effectProps.trailName) {
-            case 'bubbleTrail':
-                this.effect = new TrailEffect(this, effectProps);
-                break
-            case 'fireTrail':
-                this.effect = new FireTrail(this, effectProps);
-                break
-            case 'goldenTrail':
-                this.effect = new GoldenTrail(this, effectProps);
-                break
-        }
+        const trails = { 
+            "bubbleTrail": TrailEffect,  
+            "fireTrail": FireTrail, 
+            'goldenTrail': GoldenTrail
+        };
+        return new trails[effectProps.trailName](this, effectProps)
     }
 
     #handleKeyDown(e) {
@@ -108,9 +109,6 @@ export class Player {
     }
 
     update(deltaTime, loopFactor) {
-        this.x += this.speedX * loopFactor;
-        this.y += this.speedY * loopFactor;
-
         this.timeElapsed += deltaTime;
         if(this.timeElapsed >= this.updateFrameRateInterval) {
             this.frameRate = Math.round(this.iterations / (this.updateFrameRateInterval * 0.001));
@@ -119,8 +117,20 @@ export class Player {
         }
         this.iterations++;
         
-        if(this.start && this.baseSpeed < 10) this.baseSpeed *= 1.0002 ** loopFactor;
         if(this.start) {
+            this.x += this.speedX * loopFactor;
+            this.y += this.speedY * loopFactor;
+
+            if(this.baseSpeed >= this.maxSpeed) this.baseSpeed = this.maxSpeed;
+            else if(this.baseSpeed < this.maxSpeed) this.baseSpeed *= 1.0002 ** loopFactor;
+
+            if( this.maxSpeed <= this.maxedOutSpeed && 
+                this.getDistanceCovered() - this.distanceMarked >= this.distanceMark) {
+                this.maxSpeed += this.speedIncrease;
+                if(this.maxSpeed > this.maxedOutSpeed) this.maxSpeed = this.maxedOutSpeed;
+                this.distanceMarked += this.distanceMark;
+            }
+
             this.#isPlayerOnTrack();
             if(this.effect) this.effect.update(deltaTime, loopFactor);
         }

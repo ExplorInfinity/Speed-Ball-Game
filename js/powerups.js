@@ -1,4 +1,4 @@
-import { createStarBody, drawStarBody, Gradient, roundOff } from "./utils.js";
+import { clamp, createStarBody, drawStarBody, getRandomInteger, Gradient, roundOff } from "./utils.js";
 
 export class PowerUps {
     constructor(game, track) {
@@ -6,20 +6,22 @@ export class PowerUps {
         this.track = track;
         this.context = game.context;
 
-        this.timer = 0;
-        this.timeInterval = 1000;
-
-        this.distanceTravelled = 0;
+        this.distanceTravelled = -100;
         this.distanceInterval = 100;
 
         this.powers = [];
+        this.powersTaken = 0;
         this.timer = 0;
         this.trackLightsInterval = 7000;
     }
 
     #addPowerUpToMap() {
         const trackRects = this.track.trackRects;
-        const selectedRect = trackRects[Math.max(Math.floor(Math.random()*trackRects.length), 5)];
+        const player = this.game.player;
+        const aheadDist = getRandomInteger(10, 20);
+        const selectedRect = 
+            trackRects.find(rect => (rect.x + rect.y)*0.01 > (player.x + player.y)*0.01 + aheadDist) ??
+            trackRects[trackRects.length-1];
         const playerSize = this.game.player.size*0.5;
         const x = (selectedRect.x + playerSize) + Math.random() * (selectedRect.width - playerSize*2);
         const y = (selectedRect.y + playerSize) + Math.random() * (selectedRect.height - playerSize*2);
@@ -45,6 +47,7 @@ export class PowerUps {
 
                 if(distance <= minDist) {
                     power.taken = true;
+                    this.powersTaken++;
                     this.track.drawGuides = true;
                     this.timer = 0;
                 }

@@ -4,21 +4,10 @@
     font-family: monospace;
     font-size: 17px;
     border: 2px solid hsl(from whitesmoke h s l / 0.5);
-    /* border: none; */
     overflow-x: hidden;
     overflow-y: scroll;
     max-height: 85%;
     scrollbar-width: none;
-}
-
-#savedSetups {
-    animation: vanish 1s;
-    display: none;
-}
-
-#savedSetups[open] {
-    animation: appear 750ms;
-    display: block;
 }
 
 #savedSetups::backdrop {
@@ -30,6 +19,13 @@
 
 #savedSetups[open]::backdrop {
     opacity: 0.25;
+}
+
+#savedSetups .closeBtn {
+    margin: 25px;
+    color: white;
+    font-size: 20px;
+    font-family: cursive;
 }
 
 @keyframes appear {
@@ -54,19 +50,6 @@
         opacity: 0;
         transform: translateY(50vh);
     }
-}
-
-#savedSetups > .closeBtn {
-    position: absolute;
-    top: 0;
-    right: 0;
-    background-color: transparent;
-    color: white;
-    border: none;
-    font-family: cursive;
-    font-size: 20px;
-    margin: 3px 15px;
-    cursor: pointer;
 }
 
 .setupListItem {
