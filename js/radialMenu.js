@@ -33,9 +33,16 @@ export class RadialMenu {
         this.selected = 0;
         this.updateSelection(0);
         this.prevSelected = this.selected;
+        this.keys = new Set();
+        this.cooldownKeys = new Set();
         this.keyPressed = false;
         window.addEventListener('keydown', e => this.#handleKeyDown(e));
-        window.addEventListener('keyup', () => this.keyPressed = false);
+        window.addEventListener('keyup', ({key}) => {
+            key = key.length > 1 ? key : key.toLowerCase();
+            this.keys.delete(key);
+            this.cooldownKeys.delete(key);
+            this.keyPressed = false
+        });
 
         this.x = window.innerWidth*0.5;
         this.y = window.innerHeight*0.5;
@@ -82,24 +89,27 @@ export class RadialMenu {
         };
     }
 
-    #handleKeyDown(e) {
-        const keyPressed = e.key;
-        if (!this.keyPressed) {
-            if(keyPressed === 'B') {
-                if(this.visible) this.updateSelection(this.prevSelected);
-                this.visible = this.visible ? false : true;
-                this.keyPressed = true;
-            }
+    #handleKeyDown({key}) {
+        key = key.length > 1 ? key : key.toLowerCase();
+        if(!this.cooldownKeys.has(key)) {
+            this.keys.add(key);
+            this.cooldownKeys.add(key);
+        } else return;
+
+        if(this.keys.has('Shift') && this.keys.has('b')) {
+            if(this.visible) this.updateSelection(this.prevSelected);
+            this.visible = !this.visible;
+            this.keyPressed = true;
         }
 
-        if (this.visible) {
-            if(keyPressed === 'ArrowRight') {
+        else if(this.visible) {
+            if(this.keys.has('ArrowRight')) {
                 this.updateSelection(this.selected < this.slots-1 ? this.selected+1 : 0);
                 this.playSound();
-            } else if(keyPressed === 'ArrowLeft') {
+            } else if(this.keys.has('ArrowLeft')) {
                 this.updateSelection(this.selected > 0 ? this.selected-1 : this.slots-1);
                 this.playSound();
-            } else if(keyPressed === 'Enter') {
+            } else if(this.keys.has('Enter')) {
                 this.visible = false;
                 const { cost, costType } = this.options[this.selected];
                 if(this.handler[costType] < cost) {
@@ -109,9 +119,9 @@ export class RadialMenu {
                     this.prevSelected = this.selected;
                 }
             }
-        }   
-        if(this.visible) this.handler.pause = true;
-        else this.handler.pause = false;
+        }
+        
+        this.handler.pause = this.visible || !this.handler.game.start;
     }
 
     addOptions(name, cost, costType) {

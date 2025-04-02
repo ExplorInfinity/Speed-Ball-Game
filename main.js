@@ -209,7 +209,7 @@ class Handler {
         this.canvases = [canvas, effectsCanvas, gameStatsCanvas]; // main game canvases
 
         // Animation Loop
-        this.pause = false;
+        this.pause = true;
         this.lastTime = 0;
 
         // Cursor
@@ -252,10 +252,13 @@ class Handler {
         this.takeScreenShot = false;
         let isKeyPressed = false;
         window.addEventListener('keydown', e => {
-            if(isKeyPressed) return
-            const keyPressed = e.key.toLowerCase();
-            if(keyPressed === 's') this.takeScreenShot = true;
-            if(keyPressed === 'd') this.downloadScreenShots();
+            if(isKeyPressed) return;
+            const key = e.key.toLowerCase();
+            if(key === 's') {
+                this.takeScreenShot = true;
+            } else if(key === 'd') {
+                this.downloadScreenShots();
+            }
             isKeyPressed = true;
         });
         window.addEventListener('keyup', () => {
@@ -296,16 +299,13 @@ class Handler {
     }
 
     getGameStats() {
-        const stats = localStorage.getItem('stats');
-        
-        if(stats) {
-            const { bestRun=0, distanceCovered=0, starsEarned=0, starsCollected=0 } = JSON.parse(stats);
-            this.bestRun = bestRun;
-            this.distanceCovered = distanceCovered;
-            this.starsEarned = starsEarned;
-            this.starsCollected = starsCollected;            
-            this.updateGameStats();
-        }
+        const stats = localStorage.getItem('stats') || '{}';
+        const { bestRun=0, distanceCovered=0, starsEarned=0, starsCollected=0 } = JSON.parse(stats);
+        this.bestRun = bestRun;
+        this.distanceCovered = distanceCovered;
+        this.starsEarned = starsEarned;
+        this.starsCollected = starsCollected;            
+        this.updateGameStats();
     }
 
     updateGameStats() {
@@ -360,21 +360,21 @@ class Handler {
             this.gameStatsContext, { setupIndex, defaultPlayer });
     }
 
-    initialize(setupIndex, defaultPlayer) {
+    initialize() {
         const loadingScreen = document.getElementById('loadingScreen');
         const loadingText = document.getElementById('loadingText');
         const play = document.getElementById('play');
-
+        
         setTimeout(() => {
             play.style.display = 'block';
             loadingText.style.display = 'none';
         }, 250);
-
+        
+        this.createNewGame(); 
         play.addEventListener('click', () => {
             loadingScreen.style.display = 'none';
             const options = document.getElementById('options');
             options.style.display = 'flex';
-            this.createNewGame(setupIndex, defaultPlayer);
             this.animate(0);
         });
     }
@@ -500,6 +500,6 @@ class Handler {
 
 const handler = new Handler(canvas, effectsCanvas, gameStatsCanvas, previewCanvas, previewEffects);
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('load', () => {
     handler.initialize();
 }, { once: true });

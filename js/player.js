@@ -56,8 +56,9 @@ export class Player {
     }
 
     #handleKeyDown(e) {
-        const keyPressed = e.code;
-        if(keyPressed === 'Space' && !this.keyPressed && !this.game.handler.pause) {
+        const key = e.code;
+        const { handler } = this.game;
+        if(key === 'Space' && !this.keyPressed && !handler.pause) {
             this.keyPressed = true;
             if (this.start) {
                 this.speedX = this.speedX > 0 ? 0 : this.baseSpeed;
