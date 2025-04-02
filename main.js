@@ -361,8 +361,6 @@ class Handler {
     }
 
     initialize(setupIndex, defaultPlayer) {
-        this.createNewGame(setupIndex, defaultPlayer);
-
         const loadingScreen = document.getElementById('loadingScreen');
         const loadingText = document.getElementById('loadingText');
         const play = document.getElementById('play');
@@ -372,6 +370,7 @@ class Handler {
             loadingScreen.style.display = 'none';
             const options = document.getElementById('options');
             options.style.display = 'flex';
+            this.createNewGame(setupIndex, defaultPlayer);
             this.animate(0);
         });
     }
