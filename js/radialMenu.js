@@ -120,8 +120,11 @@ export class RadialMenu {
                 }
             }
         }
+
+        if(this.handler.game.start) {
+            this.handler.pause = this.visible;
+        }
         
-        this.handler.pause = this.visible || !this.handler.game.start;
     }
 
     addOptions(name, cost, costType) {

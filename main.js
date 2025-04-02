@@ -36,7 +36,7 @@ class Game {
         else this.player = new defaultPlayer(this);
 
         this.background = new WorleyHandler(this, context);
-        // this.background.start();
+        this.background.start();
 
         this.trackStart = {
             x: this.canvas.width*0.5, 
@@ -375,6 +375,7 @@ class Handler {
             loadingScreen.style.display = 'none';
             const options = document.getElementById('options');
             options.style.display = 'flex';
+            this.pause = false;
             this.animate(0);
         });
     }

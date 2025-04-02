@@ -13,6 +13,10 @@
     user-select: none;
 }
 
+html {
+    filter: contrast(110%) saturate(120%);
+}
+
 html, body {
     margin: 0;
     padding: 0;
