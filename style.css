@@ -4,23 +4,34 @@
     --button-green: hsl(120, 100%, 25%);
     --theme-black: hsl(0, 0%, 10%);
     --selected-border-white: hsl(0, 0%, 85%);
+    --degree: 0deg;
+    --space-hue1: 0;
+    --space-hue2: 0;
 }
 
 * {
     user-select: none;
 }
 
-body {
+html, body {
     margin: 0;
     padding: 0;
     overflow: hidden;
+    background-color: black;
 }
 
-#canvas {
-    background-color: hsl(0, 0%, 10%);
-    /* background-image: url("./geometry/\ \(10\).jpg"); */
-    /* background-image: url("./geometry/\ \(13\).jpg"); */
-    /* background-image: url("./geometry/\ \(14\).jpg"); */
+#canvas, #effectsCanvas, #gameStatsCanvas {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    translate: -50% -50%;
+}
+
+#canvas, #loadingScreen {
+    /* background-image: url("./geometry/noise.png"); */
+    /* background-image: url("./geometry/noise_tomato.png"); */
+    /* background-image: url("./geometry/noise_cyan.png"); */
+    /* background-image: url("./geometry/noise_black.png"); */
     background-attachment: fixed;
     background-position: center;
     background-repeat: no-repeat;
@@ -28,20 +39,51 @@ body {
     background-clip: border-box;
     background-origin: border-box;
     background-blend-mode: luminosity;
-    /* background-color: brown; */
+}
+
+.normal {
+    background-image: url(); /* It solves a glitch for some reason */
+    background-color: var(--theme-black);
+}
+
+.clouds-default {
+    background-image: url("./geometry/noise_purple.png");
+    background-color: transparent;
+}
+
+.clouds-original {
+    background-image: url("./geometry/noise_purple.png");
+    background-color: hsl(214, 50%, 78%);
+}
+
+.clouds-skyblue {
+    background-image: url("./geometry/noise_purple.png");
+    background-color: skyblue;
+}
+
+.clouds-wheat {
+    background-image: url("./geometry/noise_purple.png");
+    background-color: wheat;
+}
+
+.water {
+    background-image: url("./geometry/noise_gray.png");
+    background-color: skyblue;
+}
+
+.space {
+    background-image: url("./geometry/noise_black.png"), linear-gradient(var(--degree), rgba(255, 0, 0, 0.75), rgba(0, 0, 255, 0.75));
+}
+
+.colors {
+    background-image: url("./geometry/noise_black.png"), 
+    linear-gradient(var(--degree), 
+                    hsl(var(--space-hue1), 75%, 75%),  
+                    hsl(var(--space-hue2), 75%, 75%));
 }
 
 #effectsCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
     filter: blur(5px);
-}
-
-#gameStatsCanvas {
-    position: absolute;
-    top: 0;
-    left: 0;
 }
 
 #options {
@@ -67,20 +109,21 @@ body {
     margin-bottom: 5px;
     background-color: transparent;
     border: none;
+    text-shadow: 0 0 5px black;
 }
 
 .option {
     font-size: 30px;
     margin: 10px;
-    background-color: hsl(from var(--theme-black) h s l / 0.5);
-    border: 2px solid hsl(from white h s l / 0.5);
+    background-color: hsl(from gray h s l / 0.25);
+    border: 2px solid hsl(from whitesmoke h s l / 0.5);
     border-radius: 50%;
     padding: 10px;
     cursor: pointer;
 }
 
 .option:hover {
-    background-color: hsl(from var(--theme-black) h s calc(l + 5));
+    text-shadow: 0 0 5px gray;
 }
 
 .option:active {
@@ -96,12 +139,15 @@ body {
     background-color: rgba(128, 128, 128, 0.1);
     font-family: Arial, Helvetica, sans-serif;
     font-size: 20px;
-    display: flex;
     flex-direction: column;
     border: 2px solid gray;
     overflow: scroll;
     scrollbar-width: none;
     max-height: 90%;
+}
+
+.customTab[open] {
+    display: flex;
 }
 
 dialog {
@@ -114,6 +160,15 @@ dialog[open] {
     display: block;
     opacity: 1;
     animation: appear 750ms;
+}
+
+dialog::backdrop {
+    background-color: hsl(0, 0%, 0%);
+    opacity: 0;
+}
+
+dialog[open]::backdrop {
+    opacity: 0.5;
 }
 
 .closeBtn {
@@ -346,4 +401,36 @@ dialog[open] {
 
 #stats[open]::backdrop {
     opacity: 0.5;
+}
+
+/* Buy Popup */
+#buyPopup, #notice {
+    font-family: monospace;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: 2px solid hsl(from white h s l / 0.5);
+    width: 400px;
+}
+
+#notice {
+    width: max-content;
+    padding: 20px 50px;
+}
+
+#notice > button {
+    border: 1.5px solid whitesmoke;
+    border-radius: 50px;
+    background-color: transparent;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    margin: auto;
+    display: block;
+    cursor: pointer;
+}
+
+#notice > button:hover, #notice > button:focus {
+    background-color: rgb(0, 148, 197);
+    color: white;
 }

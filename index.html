@@ -5,14 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Speed Ball</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="stylesheets/loadingScreen.css">
     <link rel="stylesheet" href="stylesheets/savedSetups.css">
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+
+    <div id="loadingScreen" class="clouds-original">
+        <h1 id="title">Speed Ball</h1>
+        <p id="loadingText">Loading</p>
+        <button id="play">Start Game</button>
+    </div>
+
+    <canvas class="clouds-default" id="canvas"></canvas>
     <canvas id="effectsCanvas"></canvas>
     <canvas id="gameStatsCanvas"></canvas>
 
-    <div id="options">
+    <div id="options" style="display: none;">
         <button>⚙️</button>
         <button class="option" id="showSavedSetups">👾</button>
         <button class="option" id="openCustomisationPanel">🥏</button>
@@ -73,10 +81,9 @@
 
         <!-- Actions -->
         <div id="customisationControls">
-            <button id="startGame">Save and Play</button>
+            <button id="startGame">Play</button>
             <button id="saveSetup">Save</button>
             <button id="playDefault">Play Default</button>
-            <!-- <button>Exit</button> -->
         </div>
     </dialog>
 
@@ -103,6 +110,9 @@
         <h1 class="headings">Stats</h1>
         <button class="closeBtn" onclick="stats.close()">❌</button>
         <ul>
+            <li id="bestRun">
+                Best Run: 0
+            </li>
             <li id="distanceCovered">
                 Distance Covered: 0
             </li>
@@ -113,6 +123,16 @@
                 Stars Collected: 0
             </li>
         </ul>
+    </dialog>
+
+    <dialog id="buyPopup">
+        <h1 class="headings">It's Locked</h1>
+        <button id="buy">Buy 50🔷</button>
+    </dialog>
+
+    <dialog id="notice">
+        <h1 class="headings">It's Locked</h1>
+        <button onclick="this.parentNode.close()">Understood</button>
     </dialog>
 
     <script type="module" src="main.js"></script>

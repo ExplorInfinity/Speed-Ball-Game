@@ -154,3 +154,30 @@ export function drawStarBody(context, starBody, x, y) {
     }
     context.closePath();
 }
+
+export function calculateDistance(p1, p2) {
+    return Math.sqrt((p1.x-p2.x)**2 + (p1.y-p2.y)**2)
+}
+
+export function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    
+    const r = parseInt(hex.substring(0, 2), 16);
+    const g = parseInt(hex.substring(2, 4), 16);
+    const b = parseInt(hex.substring(4, 6), 16);
+    
+    return { r, g, b }
+    return `rgb(${r}, ${g}, ${b})`;
+}
+
+export function rgbToHex(r, g, b) {
+    r = Math.max(0, Math.min(255, r));
+    g = Math.max(0, Math.min(255, g));
+    b = Math.max(0, Math.min(255, b));
+    
+    const red = r.toString(16).padStart(2, '0');
+    const green = g.toString(16).padStart(2, '0');
+    const blue = b.toString(16).padStart(2, '0');
+    
+    return `#${red}${green}${blue}`;
+}

@@ -36,7 +36,7 @@ export class PreviewPlayer {
 
         const properties = [
             Prop.createProperty('Player Color', 'playerColor', this, 'playerColor', 0, 360, 1, signal), 
-            Prop.createProperty('Player Size', 'playerSize', this, 'size', this.size, 75, 1, signal)
+            Prop.createProperty('Player Size', 'playerSize', this, 'size', Math.min(this.size, 45), 75, 1, signal)
         ];
         
         this.effect.setPreviewType();
@@ -251,3 +251,8 @@ export class PreviewStar extends PreviewPlayer{
         this.#drawStarFace();
     }
 }
+
+export const previewPlayers = {
+    'ball': PreviewBall, 
+    'star': PreviewStar
+};

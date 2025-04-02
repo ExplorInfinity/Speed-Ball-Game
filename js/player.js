@@ -1,6 +1,5 @@
 import { FireTrail, GoldenTrail, setEffect, TrailEffect } from "./particles.js";
 import { Gradient } from "./utils.js";
-import * as Prop from './prop_component.js';
 
 export class Player {
     constructor(
@@ -14,7 +13,7 @@ export class Player {
         this.x = startPos ? startPos.x : this.track.trackRects[2].x + this.track.width*0.5;
         this.y = startPos ? startPos.y : this.track.trackRects[2].y + this.track.width*0.5;
         this.size = size;
-        this.collisionOffset = 0; //size*0.5;
+        this.collisionOffset = size*0.5; //size*0.5;
 
         this.start = false;
         this.baseSpeed = baseSpeed;
@@ -27,7 +26,7 @@ export class Player {
         this.startDistance = this.x + this.y;
         this.distanceMark = 500;
         this.distanceMarked = 0;
-        this.speedIncrease = 2;
+        this.speedIncrease = 1;
 
         this.playerColor = hue;
 
@@ -58,7 +57,7 @@ export class Player {
 
     #handleKeyDown(e) {
         const keyPressed = e.code;
-        if(keyPressed === 'Space' && !this.keyPressed) {
+        if(keyPressed === 'Space' && !this.keyPressed && !this.game.handler.pause) {
             this.keyPressed = true;
             if (this.start) {
                 this.speedX = this.speedX > 0 ? 0 : this.baseSpeed;
@@ -71,9 +70,17 @@ export class Player {
     }
 
     #isPlayerOnTrack() {
+        // Bounding Box Collision
         this.context.beginPath();
         for(const rect of this.track.trackRects) {
             rect.drawPath(this.context, this.collisionOffset);
+        }
+        if(this.context.isPointInPath(this.x, this.y)) return;
+
+        // Pixel Perfect Collision
+        this.context.beginPath();
+        for(const rect of this.track.trackRects) {
+            rect.drawPath(this.context, 0);
         }
 
         let isPointOutside = false;
@@ -331,3 +338,8 @@ export class Star extends Player {
         this.#drawStarFace();
     }
 }
+
+export const players = {
+    'ball': Ball, 
+    'star': Star
+};

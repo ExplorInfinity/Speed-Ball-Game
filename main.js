@@ -1,11 +1,12 @@
-import { Ball, Star } from "./js/player.js";
-import { PreviewBall, PreviewPlayer, PreviewStar } from "./js/previewPlayer.js";
-import { PowerUps } from "./js/powerups.js";
+import { Ball, players, Star } from "./js/player.js";
+import { PreviewBall, previewPlayers, PreviewStar } from "./js/previewPlayer.js";
 import { Track } from "./js/track.js";
 import { Color, drawStarBody, Gradient, roundOff, setShadow } from "./js/utils.js";
-import { TrailEffect } from "./js/particles.js";
 import { Setup } from "./setup.js";
 import { StarAnimation } from "./js/progressStars.js";
+import { RadialMenu } from "./js/radialMenu.js";
+import { WorleyHandler } from "./js/worleyNoiseGen.js";
+import { Background } from "./js/background.js";
 
 const canvas = document.getElementById('canvas');
 const effectsCanvas = document.getElementById('effectsCanvas');
@@ -31,11 +32,12 @@ class Game {
         this.gameStatsContext = gameStatsContext;
 
         this.track = new Track(this, context, trackWidth);
-        if(setup) {
-            this.#setPlayer(setup.playerProps, setup.effectProps);
-        } else {
-            this.player = new defaultPlayer(this);
-        }
+        this.defaultPlayer = defaultPlayer;
+        if(setup) this.#setPlayer(setup);
+        else this.player = new defaultPlayer(this);
+
+        this.background = new WorleyHandler(this, context);
+        // this.background.start();
 
         this.trackStart = {
             x: this.canvas.width*0.5, 
@@ -54,13 +56,14 @@ class Game {
         
         this.starsSize = 25;
         this.starsHue = 60;
-        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.625 };        
+        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.5 + 100 };        
     }
 
-    #setPlayer(playerProps, effectProps) {
+    #setPlayer(setup) {
+        const { playerProps, effectProps } = setup;
+        const { playerType } = playerProps;
         const props = { ...playerProps, effectProps };
-        const players = { "ball": Ball, "star": Star };
-        this.player = new players[playerProps.playerType](this, props);
+        this.player = new players[playerType](this, props);
     }
 
     setGameOver() {
@@ -95,7 +98,7 @@ class Game {
             height: this.canvas.height, 
         };
         this.track.resize();
-        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.6 };
+        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.5 + 100 };
         if(this.gameOver) {
             this.progressStars.resize(this.starsPos);
         }
@@ -109,35 +112,41 @@ class Game {
                 x: this.player.x, 
                 y: this.player.y, 
             });
+            this.background.update(deltaTime);
         } else {
             this.progressStars.update(deltaTime);
         }
     }
 
     #drawGameOver() {
-        // const fontSize = Math.max(20, Math.min(70 * (this.canvas.width * 0.000625), 70));
-        // const fontSize2 = Math.max(5, Math.min(17 * (this.canvas.width * 0.000625), 17));
+        const { gameStatsCanvas: canvas, gameStatsContext: context } = this;
         const fontSize = 70, fontSize2 = 17;
+        const offset = 0, offset2 = -25;
         const rectHeight = 350;
-        this.gameStatsContext.fillStyle = 'rgba(0,0,0,0.5)';
-        this.gameStatsContext.fillRect(0, this.canvas.height*0.425 - rectHeight*0.35, this.canvas.width, rectHeight)
-        this.gameStatsContext.save();
-        this.gameStatsContext.textBaseline = 'middle';
-        this.gameStatsContext.textAlign = 'center';
-        this.gameStatsContext.font = `${fontSize}px Cursive`;
-        setShadow(this.gameStatsContext, 2, 2, 1, 'black');
-        this.gameStatsContext.fillStyle = 'lightgreen';
-        // this.gameStatsContext.fillStyle = 'lightblue';
+        context.fillStyle = 'rgba(0,0,0,0.5)';
+        context.fillRect(0, (this.canvas.height - rectHeight)*0.5, this.canvas.width, rectHeight)
+
+        context.save();
+        context.textBaseline = 'middle';
+        context.textAlign = 'center';
+        context.font = `${fontSize}px Cursive`;
+        setShadow(context, 2, 2, 1, 'black');
+        context.fillStyle = 'lightgreen';
+        // context.fillStyle = 'lightblue';
         
         const pixelRatio = window.devicePixelRatio || 1;
-        this.gameStatsContext.scale(pixelRatio, pixelRatio);
-        this.gameStatsContext.fillText('Game Over!', canvas.width*0.5 / pixelRatio, canvas.height*0.425 / pixelRatio);
+        context.scale(pixelRatio, pixelRatio);
+        context.fillText('Game Over!', canvas.width*0.5 / pixelRatio, canvas.height*0.5 / pixelRatio - fontSize*0.5 + offset);
         
-        this.gameStatsContext.font = `${fontSize2}px Cursive`;
-        this.gameStatsContext.fillText(`Press 'Enter' to start new game.` , canvas.width*0.5 / pixelRatio, (canvas.height*0.425 + 80) / pixelRatio);
-        this.gameStatsContext.restore();
+        context.font = `${fontSize2}px Cursive`;
+        context.fillText(`Press 'Enter' to start new game.` , canvas.width*0.5 / pixelRatio, (canvas.height) * 0.5 / pixelRatio + fontSize*0.5 + offset2);
+        context.restore();
 
         this.progressStars.draw();
+    }
+
+    #drawBackground() {
+        this.background.draw();
     }
 
     #drawGame() {
@@ -177,6 +186,7 @@ class Game {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.effectsContext.clearRect(0, 0, this.effectsCanvas.width, this.effectsCanvas.height);
         this.gameStatsContext.clearRect(0, 0, this.gameStatsCanvas.width, this.gameStatsCanvas.height);
+        this.#drawBackground();
         this.#drawGame();
         this.#drawStats();
         if (this.gameOver) this.#drawGameOver();
@@ -197,16 +207,25 @@ class Handler {
         this.previewContext = previewCanvas.getContext('2d');
         this.previewEffectsContext = previewEffects.getContext('2d');
 
-        this.canvases = [canvas, effectsCanvas, gameStatsCanvas];
+        this.canvases = [canvas, effectsCanvas, gameStatsCanvas]; // main game canvases
 
+        // Animation Loop
+        this.pause = false;
+        this.lastTime = 0;
+
+        // Cursor
+        const cursorTimeout = 3000;
+        this.#addAutoCursorHide(cursorTimeout);
+
+        // Canvas Size
         this.setFullScreenCanvas();
         window.addEventListener('resize', () => {
             this.setFullScreenCanvas()
             if(this.game) this.game.resize();
+            if(this.radialMenu) this.radialMenu.resize();
         });
 
-        this.lastTime = 0;
-
+        // Saved Setups
         const setupListItems = document.querySelectorAll('.setupName');
         for(const setupListItem of setupListItems) {
             setupListItem.addEventListener('click', e => {
@@ -219,15 +238,17 @@ class Handler {
             });
         }
 
-        const openCustomisationPanelBtn = document.getElementById('openCustomisationPanel');
-        openCustomisationPanelBtn.addEventListener('click', () => this.openCustomisationPanel());
-
         const showSavedSetupsBtn = document.getElementById('showSavedSetups');
         showSavedSetupsBtn.addEventListener('click', () => {
             document.getElementById('savedSetups').showModal();
             this.#removeFocusFromOptions();
         });
 
+        // Customisation
+        const openCustomisationPanelBtn = document.getElementById('openCustomisationPanel');
+        openCustomisationPanelBtn.addEventListener('click', () => this.openCustomisationPanel());
+
+        // Screenshot
         this.downloads = [];
         this.takeScreenShot = false;
         let isKeyPressed = false;
@@ -242,19 +263,35 @@ class Handler {
             isKeyPressed = false;
         });
         
+        // Stats
         const showStatsBtn = document.getElementById('showStats');
         showStatsBtn.addEventListener('click', () => {
             showStatsBtn.addEventListener('focusin', e => e.target.blur(), { once: true })
         });
         this.getGameStats();
+
+        // Background options (Radial Menu)
+        this.radialMenu = new RadialMenu(this, this.gameStatsContext);
+    }
+
+    #addAutoCursorHide(timeout) {
+        let timer = 0;
+        window.addEventListener('mousemove', () => {
+            clearTimeout(timer);
+            document.body.style.cursor = 'auto';
+            timer = setTimeout(() => {
+                document.body.style.cursor = 'none';
+            }, timeout);
+        });
     }
 
     setGameStats(newDistanceCovered=0, newStarsEarned=0, newStarsCollected=0) {
+        this.bestRun = this.bestRun < newDistanceCovered ? newDistanceCovered : this.bestRun;
         this.distanceCovered += newDistanceCovered;
         this.starsEarned += newStarsEarned;
         this.starsCollected += newStarsCollected;
-        const { distanceCovered, starsEarned, starsCollected } = this;
-        const stats = { distanceCovered, starsEarned, starsCollected };
+        const { bestRun, distanceCovered, starsEarned, starsCollected } = this;
+        const stats = { bestRun, distanceCovered, starsEarned, starsCollected };
         localStorage.setItem('stats', JSON.stringify(stats));
         this.updateGameStats();
     }
@@ -263,18 +300,17 @@ class Handler {
         const stats = localStorage.getItem('stats');
         
         if(stats) {
-            const { distanceCovered, starsEarned, starsCollected } = JSON.parse(stats);
+            const { bestRun=0, distanceCovered=0, starsEarned=0, starsCollected=0 } = JSON.parse(stats);
+            this.bestRun = bestRun;
             this.distanceCovered = distanceCovered;
             this.starsEarned = starsEarned;
-            this.starsCollected = starsCollected;
+            this.starsCollected = starsCollected;            
             this.updateGameStats();
-        } else {
-            this.distanceCovered = this.starsEarned = this.starsCollected = 0;
-            this.setGameStats();
         }
     }
 
     updateGameStats() {
+        document.getElementById('bestRun').textContent = `Best Run: ${this.bestRun}`;
         document.getElementById('distanceCovered').textContent = `Distance Covered: ${this.distanceCovered}`;
         document.getElementById('starsEarned').textContent = `Stars Earned: ${this.starsEarned}`;
         document.getElementById('starsCollected').textContent = `Stars Collected: ${this.starsCollected}`;
@@ -327,22 +363,43 @@ class Handler {
 
     initialize(setupIndex, defaultPlayer) {
         this.createNewGame(setupIndex, defaultPlayer);
-        this.animate(0);
+
+        const loadingScreen = document.getElementById('loadingScreen');
+        const loadingText = document.getElementById('loadingText');
+        const play = document.getElementById('play');
+        loadingText.style.display = 'none';
+        play.style.display = 'block';
+        play.addEventListener('click', () => {
+            loadingScreen.style.display = 'none';
+            const options = document.getElementById('options');
+            options.style.display = 'flex';
+            this.animate(0);
+        });
     }
 
     setPreviewSettings() {
         const ballPlayer = document.getElementById('ball');
         const starPlayer = document.getElementById('star');
 
+        const players = {
+            'ball': { unlocked: true }, 
+            'star': { unlocked: true }, 
+        };
+
         const controller = new AbortController();
         const signal = controller.signal;
         ballPlayer.checked = true;
-        [ballPlayer, starPlayer].forEach(btn => 
+        for(const btn of [ballPlayer, starPlayer]) {
             btn.addEventListener('change', e => {
-                this.previewPlayer.abort();
-                this.#setPlayer(e.target.value);
-            }, { signal })
-        );
+                if(players[e.target.value].unlocked) {
+                    this.previewPlayer.abort();
+                    this.#setPlayer(e.target.value);
+                } else {
+                    const buyPopup = document.getElementById('buyPopup');
+                    buyPopup.showModal();
+                }
+            }, { signal });
+        }
 
         this.stopPreview = () => {
             this.previewPlayer.abort();
@@ -357,13 +414,9 @@ class Handler {
         closeBtn.addEventListener('click', () => this.stopPreview(), { signal });
         const startGameBtn = document.getElementById('startGame');
         startGameBtn.addEventListener('click', () => {
-            const setupName = window.prompt('Name your Setup: ');
-
-            if(setupName.trim().length > 0) {
-                const setupIndex = this.#saveCustomSetup(setupName.trim());
-                this.stopPreview();
-                this.createNewGame(setupIndex);
-            }
+            const setupIndex = this.#saveCustomSetup('Once', true);
+            this.stopPreview();
+            this.createNewGame(setupIndex);
         }, { signal });
         const saveSetupBtn = document.getElementById('saveSetup');
         saveSetupBtn.addEventListener('click', () => {
@@ -379,11 +432,11 @@ class Handler {
         }, { signal });
     }
 
-    #saveCustomSetup(setupName) {
+    #saveCustomSetup(setupName, once=false) {
         const playerProps = this.previewPlayer.getProps();
         const effectProps = this.previewPlayer.effect.getProps();
         const setup = { playerProps, effectProps, setupName };
-        const setupIndex = Setup.saveSetup(setup);
+        const setupIndex = Setup.saveSetup(setup, once);
         return setupIndex
     }
 
@@ -401,8 +454,8 @@ class Handler {
     }
 
     #setPlayer(playerType) {
-        const players = { "ball": PreviewBall, "star": PreviewStar };
-        this.previewPlayer = new players[playerType](this.previewContext, this.previewEffectsContext);
+        const { previewContext: context, previewEffectsContext: effectsContext } = this;
+        this.previewPlayer = new previewPlayers[playerType](context, effectsContext);
     }
 
     preview(timestamp) {
@@ -424,8 +477,15 @@ class Handler {
         this.lastTime = timestamp;
 
         if (document.hasFocus() || !this.game.start) {
-            this.game.update(deltaTime);
+            // Update
+            if(!this.pause) this.game.update(deltaTime);
+            this.radialMenu.update(deltaTime);
+
+            // Draw
             this.game.draw();
+            this.radialMenu.draw();
+
+            // Screenshot after drawing
             if(this.takeScreenShot) {
                 this.#getScreenShot();
                 this.takeScreenShot = false;
@@ -438,6 +498,6 @@ class Handler {
 
 const handler = new Handler(canvas, effectsCanvas, gameStatsCanvas, previewCanvas, previewEffects);
 
-window.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
     handler.initialize();
 }, { once: true });

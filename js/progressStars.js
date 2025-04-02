@@ -70,16 +70,17 @@ export class StarAnimation {
     }
 
     draw() {
+        const { context } = this;
         for(let i = 0; i < this.starPivots.length; i++) {
             const currentPivot = this.starPivots[i];            
-            drawStarBody(this.context, this.starBody, currentPivot.x, currentPivot.y);
+            drawStarBody(context, this.starBody, currentPivot.x, currentPivot.y);
             if(i < this.starShownCounter) {
-                this.context.fillStyle = this.createGlowGradient(currentPivot, this.starSize);
-                this.context.fill();
+                context.fillStyle = this.createGlowGradient(currentPivot, this.starSize);
+                context.fill();
             } else {
-                this.context.strokeStyle = this.starStrokeStyle;
-                this.context.lineWidth = this.starLineWidth;
-                this.context.stroke();
+                context.strokeStyle = this.starStrokeStyle;
+                context.lineWidth = this.starLineWidth;
+                context.stroke();
             }
         }
 
@@ -87,16 +88,16 @@ export class StarAnimation {
             this.starShownCounter < this.starShowCount) {
             const currentStarPivot = this.starPivots[this.starShownCounter];
 
-            this.context.save();
-            this.context.translate(currentStarPivot.x, currentStarPivot.y);
-            this.context.rotate(this.currentAngle);
+            context.save();
+            context.translate(currentStarPivot.x, currentStarPivot.y);
+            context.rotate(this.currentAngle);
 
             const newStarBody = createStarBody(this.currentStarSize, this.currentStarSize*0.5);
-            drawStarBody(this.context, newStarBody, 0, 0);
-            this.context.fillStyle = this.createGlowGradient({x: 0, y: 0}, this.currentStarSize);
-            this.context.fill();
+            drawStarBody(context, newStarBody, 0, 0);
+            context.fillStyle = this.createGlowGradient({x: 0, y: 0}, this.currentStarSize);
+            context.fill();
 
-            this.context.restore();
+            context.restore();
         }
     }
 }

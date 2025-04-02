@@ -2,11 +2,15 @@ import { PreviewBall, PreviewStar } from "./js/previewPlayer.js";
 import { create_div } from "./js/utils.js";
 
 export class Setup {
-    static saveSetup(props) {
+    static saveSetup(props, once=false) {
         let setupCount = 0;
         while(localStorage.getItem(`Setup${setupCount}`)) setupCount++;
 
-        if(setupCount < maxSetups) {
+        if(once) {
+            localStorage.setItem(`Setup${Number.MAX_SAFE_INTEGER}`, JSON.stringify(props));
+            return Number.MAX_SAFE_INTEGER
+        }
+        else if(setupCount < maxSetups) {
             localStorage.setItem(`Setup${setupCount}`, JSON.stringify(props)); 
             Setup.showSetups();
             return setupCount

@@ -1,4 +1,6 @@
-import { clamp, createStarBody, drawStarBody, getRandomInteger, Gradient, roundOff } from "./utils.js";
+import { Color, createStarBody, drawStarBody, getRandomInteger, Gradient, roundOff } from "./utils.js";
+
+const Two_PI = 2 * Math.PI;
 
 export class PowerUps {
     constructor(game, track) {
@@ -6,7 +8,8 @@ export class PowerUps {
         this.track = track;
         this.context = game.context;
 
-        this.distanceTravelled = -100;
+        // this.distanceTravelled = -100;
+        this.distanceTravelled = 0;
         this.distanceInterval = 100;
 
         this.powers = [];
@@ -26,7 +29,7 @@ export class PowerUps {
         const x = (selectedRect.x + playerSize) + Math.random() * (selectedRect.width - playerSize*2);
         const y = (selectedRect.y + playerSize) + Math.random() * (selectedRect.height - playerSize*2);
             
-        this.powers.push(new PowerUp(x, y));
+        this.powers.push(new Star(x, y));
     }
 
     update(deltaTime) {
@@ -70,7 +73,7 @@ export class PowerUps {
     }
 }
 
-class PowerUp {
+class Star {
     constructor(x, y) {
         this.x = x;
         this.y = y;
@@ -116,5 +119,38 @@ class PowerUp {
         drawStarBody(context, this.starBody, 0, 0);
         context.fill();
         context.restore();
+    }
+}
+
+class Heart {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.size = 30;
+    }
+
+    update() {
+
+    }
+
+    draw(context) {
+        context.save();
+        const gradient = context.createRadialGradient(0, 0, this.size, 0, 0, this.size+2);
+        gradient.addColorStop(0, Color.light(60));
+        gradient.addColorStop(1, Color.light(30));
+        context.fillStyle = gradient;
+        context.strokeStyle = gradient;
+        context.filter = 'blur(1px)';
+        context.lineWidth = 3;
+        context.beginPath();
+        context.arc(this.x, this.y, this.size, 0, Two_PI);
+        // context.fill();
+        context.stroke();
+        context.restore();
+        context.textAlign = 'center';
+        context.textBaseline = 'middle';
+        context.font = `${this.size}px cursive`;
+        context.fillText('❤️‍🔥', this.x, this.y);
+        // context.fillText('❤️❤️‍🔥')
     }
 }
