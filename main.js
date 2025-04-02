@@ -364,8 +364,12 @@ class Handler {
         const loadingScreen = document.getElementById('loadingScreen');
         const loadingText = document.getElementById('loadingText');
         const play = document.getElementById('play');
-        loadingText.style.display = 'none';
-        play.style.display = 'block';
+
+        setTimeout(() => {
+            play.style.display = 'block';
+            loadingText.style.display = 'none';
+        }, 250);
+
         play.addEventListener('click', () => {
             loadingScreen.style.display = 'none';
             const options = document.getElementById('options');
