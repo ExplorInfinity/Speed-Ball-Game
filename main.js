@@ -36,7 +36,7 @@ class Game {
         else this.player = new defaultPlayer(this);
 
         this.background = new WorleyHandler(this, context);
-        this.background.start();
+        // this.background.start();
 
         this.trackStart = {
             x: this.canvas.width*0.5, 
