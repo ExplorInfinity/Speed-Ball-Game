@@ -6,7 +6,6 @@ import { Setup } from "./setup.js";
 import { StarAnimation } from "./js/progressStars.js";
 import { RadialMenu } from "./js/radialMenu.js";
 import { WorleyHandler } from "./js/worleyNoiseGen.js";
-import { Background } from "./js/background.js";
 
 const canvas = document.getElementById('canvas');
 const effectsCanvas = document.getElementById('effectsCanvas');
