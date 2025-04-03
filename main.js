@@ -6,6 +6,7 @@ import { Setup } from "./setup.js";
 import { StarAnimation } from "./js/progressStars.js";
 import { RadialMenu } from "./js/radialMenu.js";
 import { WorleyHandler } from "./js/worleyNoiseGen.js";
+import settingsController from "./js/settings.js";
 
 const canvas = document.getElementById('canvas');
 const effectsCanvas = document.getElementById('effectsCanvas');
@@ -36,7 +37,9 @@ class Game {
         else this.player = new defaultPlayer(this);
 
         this.background = new WorleyHandler(this, context);
-        // this.background.start();
+        if(localStorage.getItem('betaTester')) {
+            this.background.start();
+        }
 
         this.trackStart = {
             x: this.canvas.width*0.5, 
@@ -209,6 +212,7 @@ class Handler {
         this.canvases = [canvas, effectsCanvas, gameStatsCanvas]; // main game canvases
 
         // Animation Loop
+        this.mainScreen = false;
         this.pause = true;
         this.lastTime = 0;
 
@@ -361,23 +365,25 @@ class Handler {
     }
 
     initialize() {
-        const loadingScreen = document.getElementById('loadingScreen');
-        const loadingText = document.getElementById('loadingText');
-        const play = document.getElementById('play');
-        
-        setTimeout(() => {
-            play.style.display = 'block';
-            loadingText.style.display = 'none';
-        }, 250);
-        
-        this.createNewGame(); 
+        const setDisplay = (id, display) => {
+            const element = document.getElementById(id);
+            element.style.display = display;
+        }
+        this.createNewGame();
+
         play.addEventListener('click', () => {
-            loadingScreen.style.display = 'none';
-            const options = document.getElementById('options');
-            options.style.display = 'flex';
+            setDisplay('loadingScreen', 'none');
+            setDisplay('options', 'flex');
+            settingsController.abort();
             this.pause = false;
+            this.mainScreen = true;
             this.animate(0);
-        });
+        }, { once: true });
+
+        requestIdleCallback(() => {
+            setDisplay('loadingText', 'none');
+            setDisplay('play', 'block');
+        }, { timeout: 500 })
     }
 
     setPreviewSettings() {

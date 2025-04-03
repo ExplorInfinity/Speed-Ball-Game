@@ -7,7 +7,19 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="stylesheets/loadingScreen.css">
     <link rel="stylesheet" href="stylesheets/savedSetups.css">
+    <link rel="stylesheet" href="stylesheets/settings.css">
 </head>
+
+<script>
+    if(navigator.userAgent) {
+        if(navigator.userAgent.includes('Chrome')) {
+            document.documentElement.style.filter = 'contrast(110%) saturate(120%)';
+        } else if(navigator.userAgent.includes('Firefox')) {
+            document.documentElement.style.filter = 'contrast(105%) saturate(110%)';
+        }
+    }
+</script>
+
 <body>
     <div id="loadingScreen" class="clouds-original">
         <h1 id="title">
@@ -156,6 +168,15 @@
     <dialog id="notice">
         <h1 class="headings">It's Locked</h1>
         <button onclick="this.parentNode.close()">Understood</button>
+    </dialog>
+
+    <dialog id="settingsCode">
+        <button onclick="settingsCode.close()">❌</button>
+        <h1>Enter Settings Code</h1>
+        <div class="container">
+            <input type="text" id="settingsInput">
+            <button id="checkCode">Submit</button>
+        </div>
     </dialog>
 
     <script type="module" src="main.js"></script>

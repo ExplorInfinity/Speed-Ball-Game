@@ -121,7 +121,7 @@ export class RadialMenu {
             }
         }
 
-        if(this.handler.game.start) {
+        if(this.handler.mainScreen) {
             this.handler.pause = this.visible;
         }
         
@@ -171,8 +171,6 @@ export class RadialMenu {
             this.degree += updateValue;
             this.hue1 += updateValue;
             this.hue2 += updateValue;
-        } else if(this.selected) {
-
         }
     }
 
