@@ -133,10 +133,10 @@ class Game {
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         if(isMobile()) {
-            const fontSize = Math.min(70, 0.04 * window.innerWidth), fontSize2 = Math.min(17, 0.015 * window.innerWidth);
-            const offset = 0, offset2 = isMobile() ? -2 : -25;
-            const rectHeight = Math.min(350, window.innerHeight * 0.375);
-            const rectOffset = isMobile() ? 20 : 0;
+            const fontSize = 16, fontSize2 = 7;
+            const offset = 0, offset2 = -2;
+            const rectHeight = 275;
+            const rectOffset = 20;
             context.fillStyle = 'rgba(0,0,0,0.5)';
             context.fillRect(0, (this.canvas.height - rectHeight)*0.5 + rectOffset, this.canvas.width, rectHeight);
     
@@ -157,7 +157,7 @@ class Game {
             } else {
                 const fontSize = 70, fontSize2 = 17;
                 const offset = 0, offset2 = -25;
-                const rectHeight = 350;
+                const rectHeight = 375;
                 context.fillStyle = 'rgba(0,0,0,0.5)';
                 context.fillRect(0, (this.canvas.height - rectHeight)*0.5, this.canvas.width, rectHeight);
         
