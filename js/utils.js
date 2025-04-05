@@ -181,3 +181,7 @@ export function rgbToHex(r, g, b) {
     
     return `#${red}${green}${blue}`;
 }
+
+export function isMobile() {
+    return window.matchMedia("(max-width: 500px)").matches;
+}

@@ -12,37 +12,47 @@
     display: grid;
     justify-content: center;
     align-items: center;
-    grid-template-rows: 1fr 1fr;
+    grid-template-rows: 2fr 1fr;
 }
 
 #title {
-    position: relative;
     text-shadow: 0 0 30px black;
-    /* text-shadow: 60px 110px 6px rgba(255, 255, 255, 0.2);
-    box-shadow: 60px 110px 10px rgba(0, 0, 0, 0.1); */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    translate: 0 10%;
+}
+
+.svgContainer {
+    position: relative;
+    margin: auto;
+    width: 100%;
+    height: 250px;
+}
+
+.svgContainer > svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
 }
 
 svg:first-child {
     --_hue: 0;
-    position: absolute;
-    top: 115%;
-    left: 15%;
-    width: 340px;
+    translate: -50% -50%;
+    transform: scale(120%);
     filter: drop-shadow(-5px 5px 10px rgba(0, 0, 0, 0.5));
 }
 
 svg:last-child {
     --_hue: 45;
-    position: absolute;
-    top: 135%;
-    left: 47%;
+    translate: -15% -35%;
     rotate: 90deg;
-    width: 150px;
+    transform: scale(90%);
     filter: drop-shadow(-5px 10px 10px rgba(0, 0, 0, 0.5));
 }
 
 #loadingText {
-    /* background-color: rgba(0, 0, 0, 0.1); */
     padding: 20px 50px;
     border-radius: 5px;
     font-size: 25px;
@@ -50,11 +60,8 @@ svg:last-child {
     grid-column: 1fr;
     margin: auto;
     text-align: center;
-    /* box-shadow: 0 0 3px rgba(0, 0, 0, 0.237); */
-    /* border: 3px solid rgba(0, 0, 0, 0.15); */
-    /* text-shadow: 60px 110px 6px rgba(255, 255, 255, 0.2); */
-    /* box-shadow: 60px 110px 10px rgba(0, 0, 0, 0.1); */
-    /* animation: rotate 1.25s ease-in-out alternate infinite; */
+    font-size: 0.7em;
+    translate: 0 -50%;
 }
 
 #loadingText::after {
@@ -78,6 +85,7 @@ svg:last-child {
     display: none;
     transition: background-color 250ms;
     text-shadow: 0 0 5px black;
+    translate: 0 -50%;
 }
 
 #play:hover {
@@ -120,5 +128,34 @@ svg:last-child {
     }
     100% {
         content: ".....";
+    }
+}
+
+@media (width < 500px) {
+    #title {
+        font-size: 1em;
+        display: flex;
+        flex-direction: column;
+    }
+
+    svg:first-child {
+        transform: scale(90%);
+    }
+
+    svg:last-child {
+        translate: -20% -35%;
+        transform: scale(65%);
+    }
+
+    #loadingText {
+        font-size: 0.6em;
+    }
+
+    #loadingText::after {
+        content: "";
+    }
+
+    #play {
+        font-size: 0.6em;
     }
 }

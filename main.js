@@ -1,7 +1,7 @@
 import { Ball, players, Star } from "./js/player.js";
 import { PreviewBall, previewPlayers, PreviewStar } from "./js/previewPlayer.js";
 import { Track } from "./js/track.js";
-import { Color, drawStarBody, Gradient, roundOff, setShadow } from "./js/utils.js";
+import { Color, drawStarBody, Gradient, isMobile, roundOff, setShadow } from "./js/utils.js";
 import { Setup } from "./setup.js";
 import { StarAnimation } from "./js/progressStars.js";
 import { RadialMenu } from "./js/radialMenu.js";
@@ -56,9 +56,9 @@ class Game {
 
         this.debug = false;
         
-        this.starsSize = 25;
+        this.starsSize = isMobile() ? 20 : 25;
         this.starsHue = 60;
-        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.5 + 100 };        
+        this.starsPos = { x: this.canvas.width*0.5, y: this.canvas.height*0.5 + 100};        
     }
 
     #setPlayer(setup) {
@@ -70,6 +70,8 @@ class Game {
 
     setGameOver() {
         this.gameOver = true;
+        this.player.eventListeners.abort();
+
         const distanceCovered = this.player.getDistanceCovered();
         const starsEarned = this.track.distanceMilestone.reduce(
             (acc, current, i) => distanceCovered >= current ? i+1 : acc, 0);
@@ -87,6 +89,10 @@ class Game {
                 this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
                 controller.abort();
             }
+        }, { signal });
+        this.gameStatsCanvas.addEventListener('touchstart', () => {
+            this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
+            controller.abort();    
         }, { signal });
     }
 
@@ -122,11 +128,12 @@ class Game {
 
     #drawGameOver() {
         const { gameStatsCanvas: canvas, gameStatsContext: context } = this;
-        const fontSize = 70, fontSize2 = 17;
-        const offset = 0, offset2 = -25;
-        const rectHeight = 350;
+        const fontSize = Math.min(70, 0.04 * window.innerWidth), fontSize2 = Math.min(17, 0.015 * window.innerWidth);
+        const offset = 0, offset2 = isMobile() ? -2 : -25;
+        const rectHeight = Math.min(350, window.innerHeight * 0.375);
+        const rectOffset = isMobile() ? 20 : 0;
         context.fillStyle = 'rgba(0,0,0,0.5)';
-        context.fillRect(0, (this.canvas.height - rectHeight)*0.5, this.canvas.width, rectHeight)
+        context.fillRect(0, (this.canvas.height - rectHeight)*0.5 + rectOffset, this.canvas.width, rectHeight)
 
         context.save();
         context.textBaseline = 'middle';
@@ -141,7 +148,10 @@ class Game {
         context.fillText('Game Over!', canvas.width*0.5 / pixelRatio, canvas.height*0.5 / pixelRatio - fontSize*0.5 + offset);
         
         context.font = `${fontSize2}px Cursive`;
-        context.fillText(`Press 'Enter' to start new game.` , canvas.width*0.5 / pixelRatio, (canvas.height) * 0.5 / pixelRatio + fontSize*0.5 + offset2);
+        context.fillText(isMobile() ? 
+            'Touch screen to start new game.' :
+            `Press 'Enter' to start new game.`
+            , canvas.width*0.5 / pixelRatio, (canvas.height) * 0.5 / pixelRatio + fontSize*0.5 + offset2);
         context.restore();
 
         this.progressStars.draw();
@@ -472,11 +482,26 @@ class Handler {
             const deltaTime = timestamp - this.previewLastTime;
             this.previewLastTime = timestamp;
     
-            const loopFactor = deltaTime * 0.0625; 
-    
+            const loopFactor = deltaTime * 0.0625;
+
+            const isSmallDevice = isMobile(); 
+            const previewContexts = [this.previewContext, this.previewEffectsContext];
+            if(isSmallDevice) {
+                for(const context of previewContexts) {
+                    context.save();
+                    context.translate(-context.canvas.width * 0.25, -context.canvas.height * 0.25);
+                    context.scale(1.5, 1.5);
+                }
+            }
+            
             this.previewPlayer.update(deltaTime, loopFactor);
             this.previewPlayer.draw();
-
+            
+            if(isSmallDevice) {
+                for(const context of previewContexts) {
+                    context.restore();
+                }
+            }
             requestAnimationFrame((time) => this.preview(time));
         }
     }

@@ -83,3 +83,13 @@
     margin: 10px 0;
     text-transform: capitalize;
 }
+
+@media (width < 500px) {
+    #savedSetups, #savedSetups[open] {
+        width: 85%;
+    }
+
+    .setupListItem {
+        width: 85%;
+    }
+}

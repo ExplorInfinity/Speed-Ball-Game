@@ -1,5 +1,5 @@
 import { FireTrail, GoldenTrail, setEffect, TrailEffect } from "./particles.js";
-import { Gradient } from "./utils.js";
+import { Gradient, isMobile } from "./utils.js";
 
 export class Player {
     constructor(
@@ -30,9 +30,22 @@ export class Player {
 
         this.playerColor = hue;
 
+        this.eventListeners = new AbortController();
+        const { signal } = this.eventListeners;
+
         this.keyPressed = false;
-        window.addEventListener('keydown', e => this.#handleKeyDown(e));
-        window.addEventListener('keyup', () => this.keyPressed=false);
+        window.addEventListener('keydown', e => this.#handleKeyDown(e), { signal });
+        window.addEventListener('keyup', () => this.keyPressed=false, { signal });
+        if(isMobile()) {
+            this.touch = false;
+            this.game.gameStatsCanvas.addEventListener('touchstart', () => {
+                if(!this.touch && !this.game.handler.pause) {
+                    this.changeVel();
+                    this.touch = true;
+                }
+            }, { signal });
+            window.addEventListener('touchend', () => this.touch = false, { signal });
+        }
 
         // Effects Trail
         this.effectsCanvas = game.effectsCanvas;
@@ -60,13 +73,17 @@ export class Player {
         const { handler } = this.game;
         if(key === 'Space' && !this.keyPressed && !handler.pause) {
             this.keyPressed = true;
-            if (this.start) {
-                this.speedX = this.speedX > 0 ? 0 : this.baseSpeed;
-                this.speedY = this.speedY > 0 ? 0 : this.baseSpeed;
-            } else {
-                this.speedX = this.baseSpeed;
-                this.start = true;
-            }
+            this.changeVel();
+        }
+    }
+
+    changeVel() {
+        if (this.start) {
+            this.speedX = this.speedX > 0 ? 0 : this.baseSpeed;
+            this.speedY = this.speedY > 0 ? 0 : this.baseSpeed;
+        } else {
+            this.speedX = this.baseSpeed;
+            this.start = true;
         }
     }
 

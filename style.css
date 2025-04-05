@@ -358,6 +358,60 @@ dialog[open]::backdrop {
     --button-color: var(--button-orange);
 }
 
+@media (width < 500px) {
+    .customTab, .customTab[open] {
+        width: 80%;
+        height: 75%;
+    }
+
+    .customTab > .headings {
+        font-size: 1.1em;
+    }
+
+    .customTab > .closeBtn {
+        top: -20px;
+        right: -25px;
+    }
+
+    #panel {
+        grid-template-columns: 1fr;
+        font-size: 0.9em;
+        min-height: 165px;
+        overflow: scroll;
+    }
+
+    #typeCustomisation {
+        font-size: 0.8em;
+    }
+
+    .customChoice {
+        width: 40px;
+        height: 40px;
+        font-size: 1.25em;
+    }
+
+    #previewCanvas, #previewEffects {
+        width: 100%;
+    }
+
+    #customisationControls {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: repeat(3, 1fr);
+        gap: 10px;
+        margin: 10px 0;
+    }
+    
+    #customisationControls > button {
+        font-size: 0.9em;
+        height: fit-content;
+        margin: 0;
+    }
+
+    #customisationControls > button:last-child {
+        grid-column: span 2;
+    }
+}
+
 /* Show Stats */
 #showStats {
     position: absolute;
@@ -406,6 +460,25 @@ dialog[open]::backdrop {
 
 #stats[open]::backdrop {
     opacity: 0.5;
+}
+
+@media (width < 500px) {
+    #showStats {
+        right: -10px;
+    }
+
+    #options {
+        right: -1px;
+    }
+
+    #stats {
+        width: 80%;
+        font-size: 1.3em;
+    }
+
+    .headings {
+        font-size: 1.5em;
+    }
 }
 
 /* Buy Popup */
