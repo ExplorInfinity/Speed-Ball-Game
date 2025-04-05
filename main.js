@@ -128,32 +128,53 @@ class Game {
 
     #drawGameOver() {
         const { gameStatsCanvas: canvas, gameStatsContext: context } = this;
-        const fontSize = Math.min(70, 0.04 * window.innerWidth), fontSize2 = Math.min(17, 0.015 * window.innerWidth);
-        const offset = 0, offset2 = isMobile() ? -2 : -25;
-        const rectHeight = Math.min(350, window.innerHeight * 0.375);
-        const rectOffset = isMobile() ? 20 : 0;
-        context.fillStyle = 'rgba(0,0,0,0.5)';
-        context.fillRect(0, (this.canvas.height - rectHeight)*0.5 + rectOffset, this.canvas.width, rectHeight)
-
+        
         context.save();
         context.textBaseline = 'middle';
         context.textAlign = 'center';
-        context.font = `${fontSize}px Cursive`;
-        setShadow(context, 2, 2, 1, 'black');
-        context.fillStyle = 'lightgreen';
-        // context.fillStyle = 'lightblue';
+        if(isMobile()) {
+            const fontSize = Math.min(70, 0.04 * window.innerWidth), fontSize2 = Math.min(17, 0.015 * window.innerWidth);
+            const offset = 0, offset2 = isMobile() ? -2 : -25;
+            const rectHeight = Math.min(350, window.innerHeight * 0.375);
+            const rectOffset = isMobile() ? 20 : 0;
+            context.fillStyle = 'rgba(0,0,0,0.5)';
+            context.fillRect(0, (this.canvas.height - rectHeight)*0.5 + rectOffset, this.canvas.width, rectHeight);
+    
+            context.font = `${fontSize}px Cursive`;
+            setShadow(context, 2, 2, 1, 'black');
+            context.fillStyle = 'lightgreen';
+            // context.fillStyle = 'lightblue';
+            
+            const pixelRatio = window.devicePixelRatio || 1;
+            context.scale(pixelRatio, pixelRatio);
+            context.fillText('Game Over!', canvas.width*0.5 / pixelRatio, canvas.height*0.5 / pixelRatio - fontSize*0.5 + offset);
+            
+            context.font = `${fontSize2}px Cursive`;
+            context.fillText(isMobile() ? 
+                'Touch screen to start new game.' :
+                `Press 'Enter' to start new game.`
+                , canvas.width*0.5 / pixelRatio, (canvas.height) * 0.5 / pixelRatio + fontSize*0.5 + offset2);
+            } else {
+                const fontSize = 70, fontSize2 = 17;
+                const offset = 0, offset2 = -25;
+                const rectHeight = 350;
+                context.fillStyle = 'rgba(0,0,0,0.5)';
+                context.fillRect(0, (this.canvas.height - rectHeight)*0.5, this.canvas.width, rectHeight);
         
-        const pixelRatio = window.devicePixelRatio || 1;
-        context.scale(pixelRatio, pixelRatio);
-        context.fillText('Game Over!', canvas.width*0.5 / pixelRatio, canvas.height*0.5 / pixelRatio - fontSize*0.5 + offset);
-        
-        context.font = `${fontSize2}px Cursive`;
-        context.fillText(isMobile() ? 
-            'Touch screen to start new game.' :
-            `Press 'Enter' to start new game.`
-            , canvas.width*0.5 / pixelRatio, (canvas.height) * 0.5 / pixelRatio + fontSize*0.5 + offset2);
+                context.font = `${fontSize}px Cursive`;
+                setShadow(context, 2, 2, 1, 'black');
+                context.fillStyle = 'lightgreen';
+                // context.fillStyle = 'lightblue';
+                
+                const pixelRatio = window.devicePixelRatio || 1;
+                context.scale(pixelRatio, pixelRatio);
+                context.fillText('Game Over!', canvas.width*0.5 / pixelRatio, canvas.height*0.5 / pixelRatio - fontSize*0.5 + offset);
+                
+                context.font = `${fontSize2}px Cursive`;
+                context.fillText(`Press 'Enter' to start new game.`, canvas.width*0.5 / pixelRatio, (canvas.height) * 0.5 / pixelRatio + fontSize*0.5 + offset2);
+            }
         context.restore();
-
+        
         this.progressStars.draw();
     }
 
