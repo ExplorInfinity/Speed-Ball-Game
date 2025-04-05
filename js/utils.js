@@ -183,5 +183,5 @@ export function rgbToHex(r, g, b) {
 }
 
 export function isMobile() {
-    return window.matchMedia("(max-width: 500px)").matches;
+    return window.innerWidth < 500;
 }
