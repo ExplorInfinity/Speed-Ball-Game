@@ -92,12 +92,19 @@ class Game {
         }, { signal });
 
         let lastTouch;
+        let registerTouch = false;
+        this.gameStatsCanvas.addEventListener('touchstart', () => {
+            registerTouch = true;
+        }, { signal });
         this.gameStatsCanvas.addEventListener('touchend', () => {
-            if(lastTouch && Date.now() - lastTouch < 300) {
-                this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
-                controller.abort();
+            if(registerTouch) {
+                if(lastTouch && Date.now() - lastTouch < 300) {
+                    this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
+                    controller.abort();
+                }
+                lastTouch = Date.now();
+                registerTouch = false;
             }
-            lastTouch = Date.now();
         }, { signal });
     }
 
