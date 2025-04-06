@@ -142,7 +142,7 @@ class Game {
                 let fontSize = 5;
                 let width = 0;
                 while(width < window.innerWidth * 0.225) {
-                    context.font = `${fontSize}px Cursive`;
+                    context.font = `${fontSize}px Arial`;
                     width = context.measureText(text).width;
                     fontSize++;
                 }
