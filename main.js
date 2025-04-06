@@ -133,27 +133,38 @@ class Game {
         context.textBaseline = 'middle';
         context.textAlign = 'center';
         if(isMobile()) {
-            const fontSize = 16, fontSize2 = 7;
+            const getFontSize = (text) => {
+                let fontSize = 5;
+                let width = 0;
+                while(width < window.innerWidth * 0.225) {
+                    context.font = `${fontSize}px Cursive`;
+                    width = context.measureText(text).width;
+                    fontSize++;
+                }
+
+                return fontSize
+            }
             const offset = 0, offset2 = -2;
             const rectHeight = 275;
             const rectOffset = 20;
             context.fillStyle = 'rgba(0,0,0,0.5)';
             context.fillRect(0, (this.canvas.height - rectHeight)*0.5 + rectOffset, this.canvas.width, rectHeight);
     
-            context.font = `${fontSize}px Cursive`;
+            const mainText = 'Game Over!';
+            const fontSize = getFontSize(mainText);
             setShadow(context, 2, 2, 1, 'black');
             context.fillStyle = 'lightgreen';
-            // context.fillStyle = 'lightblue';
+            // context.fillStyle = 'lightblue'
             
             const pixelRatio = window.devicePixelRatio || 1;
             context.scale(pixelRatio, pixelRatio);
-            context.fillText('Game Over!', canvas.width*0.5 / pixelRatio, canvas.height*0.5 / pixelRatio - fontSize*0.5 + offset);
-            
-            context.font = `${fontSize2}px Cursive`;
-            context.fillText(isMobile() ? 
-                'Touch screen to start new game.' :
-                `Press 'Enter' to start new game.`
-                , canvas.width*0.5 / pixelRatio, (canvas.height) * 0.5 / pixelRatio + fontSize*0.5 + offset2);
+            context.fillText(mainText, canvas.width*0.5 / pixelRatio, canvas.height*0.5 / pixelRatio - fontSize*0.5 + offset);
+
+            const description = 'Double Tap to start new game.'
+            getFontSize(description);
+            context.fillText(description, 
+                canvas.width * 0.5 / pixelRatio, 
+                canvas.height * 0.5 / pixelRatio + fontSize*0.5 + offset2);
             } else {
                 const fontSize = 70, fontSize2 = 17;
                 const offset = 0, offset2 = -25;
