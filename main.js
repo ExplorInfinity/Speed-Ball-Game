@@ -92,7 +92,7 @@ class Game {
         }, { signal });
 
         let lastTouch;
-        this.gameStatsCanvas.addEventListener('touchstart', () => {
+        this.gameStatsCanvas.addEventListener('touchend', () => {
             if(lastTouch && Date.now() - lastTouch < 300) {
                 this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
                 controller.abort();
