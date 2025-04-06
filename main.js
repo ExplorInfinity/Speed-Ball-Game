@@ -90,9 +90,14 @@ class Game {
                 controller.abort();
             }
         }, { signal });
+
+        let lastTouch;
         this.gameStatsCanvas.addEventListener('touchstart', () => {
-            this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
-            controller.abort();    
+            if(lastTouch && Date.now() - lastTouch < 300) {
+                this.handler.createNewGame(this.setupIndex, this.defaultPlayer);
+                controller.abort();
+            }
+            lastTouch = Date.now();
         }, { signal });
     }
 
