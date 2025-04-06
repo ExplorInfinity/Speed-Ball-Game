@@ -89,6 +89,10 @@
         width: 85%;
     }
 
+    #savedSetups .closeBtn {
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
     .setupListItem {
         width: 85%;
     }
