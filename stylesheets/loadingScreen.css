@@ -47,10 +47,9 @@ svg:first-child {
     translate: -50% -50%;
     transform: scale(var(--svg-ball-scale)) rotate(0deg);
     filter: drop-shadow(-5px 5px 10px rgba(0, 0, 0, 0.5));
-    animation: ballAnimation 2s;
+    animation: ballAnimation 2.2s;
     animation-iteration-count: 1;
     animation-timing-function: ease-out;
-    animation-delay: 200ms;
     z-index: 1000;
 }
 
@@ -198,4 +197,5 @@ svg:last-child {
     #play {
         font-size: 0.6em;
     }
+
 }
