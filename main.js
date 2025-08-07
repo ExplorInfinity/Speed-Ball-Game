@@ -408,8 +408,13 @@ class Handler {
 
     setFullScreenCanvas() {
         for(const canvas of this.canvases) {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+            if(isMobile()) {
+                canvas.width = screen.width;
+                canvas.height = screen.height;
+            } else {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
         }
     }
 
