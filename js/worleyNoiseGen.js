@@ -24,6 +24,8 @@ export class WorleyNoise {
         
         const sc = hexToRgb('#aaa8d7');
         const ec = hexToRgb('#7c7c9d');
+        // const sc = hexToRgb('#98b3d9');
+        // const ec = hexToRgb('#829dc3');
         // const sc = {}, ec = {};
         this.rStart = sc.r || startColor[0];
         this.gStart = sc.g || startColor[1];

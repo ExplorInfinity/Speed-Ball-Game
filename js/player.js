@@ -13,7 +13,7 @@ export class Player {
         this.x = startPos ? startPos.x : this.track.trackRects[2].x + this.track.width*0.5;
         this.y = startPos ? startPos.y : this.track.trackRects[2].y + this.track.width*0.5;
         this.size = size;
-        this.collisionOffset = size*0.5; //size*0.5;
+        this.collisionOffset = size * 0.5;
 
         this.start = false;
         this.baseSpeed = baseSpeed;
@@ -57,15 +57,6 @@ export class Player {
         this.timeElapsed = 0;
         this.updateFrameRateInterval = 500;
         this.frameRate = 0;
-    }
-
-    setEffect(effectProps) {
-        const trails = { 
-            "bubbleTrail": TrailEffect,  
-            "fireTrail": FireTrail, 
-            'goldenTrail': GoldenTrail
-        };
-        return new trails[effectProps.trailName](this, effectProps)
     }
 
     #handleKeyDown(e) {
@@ -296,19 +287,6 @@ export class Star extends Player {
     }
 
     #drawStar() {
-        // const radius = this.size*0.5;
-        // const innerRadius = this.size*0.25;
-
-        // this.context.beginPath();
-        // for(let i = this.currentAngle; i < 2*Math.PI + this.currentAngle + 0.01; i += Math.PI*0.4) {
-        //     const x = this.x + Math.cos(i)*radius;
-        //     const y = this.y + Math.sin(i)*radius;
-        //     const innerX = this.x + Math.cos(i+Math.PI*0.2)*innerRadius;
-        //     const innerY = this.y + Math.sin(i+Math.PI*0.2)*innerRadius;
-        //     this.context.lineTo(x, y);
-        //     this.context.lineTo(innerX, innerY);
-        // }
-
         this.context.save();
         this.context.translate(this.x, this.y);
         this.context.rotate(this.currentAngle);
