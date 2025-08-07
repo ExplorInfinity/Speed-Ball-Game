@@ -183,5 +183,8 @@ export function rgbToHex(r, g, b) {
 }
 
 export function isMobile() {
-    return window.innerWidth < 500;
+    return (
+        /Mobi|Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (navigator.userAgentData?.mobile ?? false)
+    );
 }
